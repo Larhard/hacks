@@ -1,0 +1,15 @@
+--- VirtualBox-4.3.14/src/VBox/Runtime/r0drv/linux/alloc-r0drv-linux.c
++++ VirtualBox-4.3.14/src/VBox/Runtime/r0drv/linux/alloc-r0drv-linux.c
+@@ -189,11 +189,11 @@ static PRTMEMHDR rtR0MemAllocExecVmArea(
+          * in the free function, if nothing else...
+          */
+         struct page **papPagesIterator = papPages;
+         pVmArea->nr_pages = cPages;
+         pVmArea->pages    = papPages;
+-        if (!map_vm_area(pVmArea, PAGE_KERNEL_EXEC, &papPagesIterator))
++        if (!map_vm_area(pVmArea, PAGE_KERNEL_EXEC, papPagesIterator))
+         {
+             PRTMEMLNXHDREX pHdrEx = (PRTMEMLNXHDREX)pVmArea->addr;
+             pHdrEx->pVmArea     = pVmArea;
+             pHdrEx->pvDummy     = NULL;
+             return &pHdrEx->Hdr;

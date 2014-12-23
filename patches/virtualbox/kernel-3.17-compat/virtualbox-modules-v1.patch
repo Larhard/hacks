@@ -1,0 +1,20 @@
+--- a/vboxnetadp/linux/VBoxNetAdp-linux.c
++++ b/vboxnetadp/linux/VBoxNetAdp-linux.c
+@@ -180,9 +180,17 @@ int vboxNetAdpOsCreate(PVBOXNETADP pThis
+     struct net_device *pNetDev;
+ 
+     /* No need for private data. */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 17, 0)
++    pNetDev = alloc_netdev(sizeof(VBOXNETADPPRIV),
++                           pThis->szName[0] ? pThis->szName : VBOXNETADP_LINUX_NAME,
++                           NET_NAME_UNKNOWN,
++                           vboxNetAdpNetDevInit);
++#else /* LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0) */
+     pNetDev = alloc_netdev(sizeof(VBOXNETADPPRIV),
+                            pThis->szName[0] ? pThis->szName : VBOXNETADP_LINUX_NAME,
+                            vboxNetAdpNetDevInit);
++#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(3, 17, 0) */
++
+     if (pNetDev)
+     {
+         int err;
