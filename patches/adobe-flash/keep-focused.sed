@@ -1,0 +1,3 @@
+#!sed -f
+
+s/_NET_ACTIVE_WINDOW/__ET_ACTIVE_WINDOW/g
