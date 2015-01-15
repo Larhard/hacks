@@ -1,0 +1,55 @@
+From cc3ad8aba920e1abc70e423854dbb708f26e097a Mon Sep 17 00:00:00 2001
+From: Larhard <larhard@gmail.com>
+Date: Thu, 15 Jan 2015 12:08:09 +0100
+Subject: [PATCH] add generic terminal support
+
+Adds possibility to run netkit in all terminals, not only officially supported
+
+---
+ bin/vstart | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/bin/vstart b/bin/vstart
+index 67eaec3..8f95a44 100755
+--- a/bin/vstart
++++ b/bin/vstart
+@@ -347,14 +347,14 @@ parseCmdLine() {
+             shift; CURRENT_ARGUMENT="$1"
+             checkSpaces "$CURRENT_ARGUMENT"
+             case "$CURRENT_ARGUMENT" in
+-               konsole|konsole-tab|gnome|xterm)
+-                  ASSIGNED_TERM_TYPE=1
+-                  TERM_TYPE=$CURRENT_ARGUMENT;;
++               konsole|konsole-tab|gnome|xterm) ;;
+                *)
+                   warning "$SCRIPTNAME" "$CMDLINE" "$0" \
+                           "Unsupported terminal emulator application: $CURRENT_ARGUMENT."
+-                  exit 1;;
+-            esac;;
++            esac
++            ASSIGNED_TERM_TYPE=1
++            TERM_TYPE=$CURRENT_ARGUMENT
++            ;;
+          
+          --version)
+             showVersion
+@@ -428,6 +428,7 @@ if [ $VM_CON0 = "xterm" -o $VM_CON1 = "xterm" ]; then
+    # Look for user specified terminal application or, if none has been specified,
+    # search for the standard xterm.
+    TERMINAL_APPLICATION=${TERM_TYPE:-xterm}
++   echo " -------- using terminal: $TERMINAL_APPLICATION"
+    [ $TERMINAL_APPLICATION = "konsole-tab" ] && TERMINAL_APPLICATION=konsole
+    [ $TERMINAL_APPLICATION = "gnome" ] && TERMINAL_APPLICATION=gnome-terminal
+    if ! which $TERMINAL_APPLICATION > /dev/null 2>&1; then
+@@ -646,7 +647,7 @@ if [ $VM_CON0 = "xterm" -a "$CON0_PORTHELPER" != "yes" ]; then
+       konsole)       KERNELCMD="konsole --nofork --title $VM_NAME -e $KERNELCMD";;
+       konsole-tab)   KERNELCMD="$NETKIT_HOME/bin/konsole-tabs.sh -e $KERNELCMD";;
+       gnome)         KERNELCMD="gnome-terminal --disable-factory -x $KERNELCMD";;
+-      *)             KERNELCMD="xterm -e $KERNELCMD";;
++      *)             KERNELCMD="$TERMINAL_APPLICATION -e $KERNELCMD";;
+    esac
+    VM_CON0="this_noporthelper"
+ fi
+-- 
+2.0.5
+
