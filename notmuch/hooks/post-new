@@ -1,0 +1,24 @@
+#!/usr/bin/perl -w
+
+use File::Basename;
+use Gtk2::Notify -init, "Mail";
+use JSON;
+
+my $dirname = dirname(__FILE__);
+
+open NOTMUCH, "-|", "notmuch search --format=json tag:unread and not tag:ack";
+@result = @{decode_json(join '', <NOTMUCH>)};
+close NOTMUCH;
+
+foreach $message (@result) {
+	$authors = %{$message}{'authors'};
+	$subject = %{$message}{'subject'};
+	my $notification = Gtk2::Notify->new($authors, $subject, "$dirname/icon.png");
+	$notification -> show;
+}
+
+if (@result) {
+	system "aplay -q '$dirname/new_mail.wav'";
+}
+
+system "notmuch tag +ack not tag:ack"
